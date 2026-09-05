@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4K Video Upscaler Pro</title>
+    <title>Cinematic 4K Video Upscaler Pro</title>
     <style>
         * {
             margin: 0;
@@ -13,22 +13,39 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
             padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                max-height: 400px;
+                overflow-y: auto;
+            }
         }
 
         .container {
-            background: white;
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             padding: 40px;
-            animation: slideIn 0.5s ease-out;
+            animation: slideIn 0.6s ease-out;
         }
 
         @keyframes slideIn {
@@ -44,56 +61,82 @@
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
 
         .header h1 {
-            font-size: 28px;
-            color: #333;
+            font-size: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
 
         .header p {
-            color: #666;
+            color: #aaa;
             font-size: 14px;
         }
 
         .upload-zone {
             border: 2px dashed #667eea;
             border-radius: 15px;
-            padding: 40px;
+            padding: 50px 40px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: #f8f9ff;
+            background: rgba(102, 126, 234, 0.05);
             margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, 20px); }
         }
 
         .upload-zone:hover {
             border-color: #764ba2;
-            background: #f0f2ff;
+            background: rgba(102, 126, 234, 0.1);
         }
 
         .upload-zone.dragover {
             border-color: #764ba2;
-            background: #e8ebff;
+            background: rgba(102, 126, 234, 0.15);
             transform: scale(1.02);
         }
 
         .upload-icon {
-            font-size: 48px;
+            font-size: 56px;
             margin-bottom: 15px;
+            z-index: 1;
+            position: relative;
         }
 
         .upload-zone h2 {
-            font-size: 18px;
-            color: #333;
+            font-size: 20px;
+            color: #fff;
             margin-bottom: 5px;
+            z-index: 1;
+            position: relative;
         }
 
         .upload-zone p {
-            color: #999;
+            color: #aaa;
             font-size: 13px;
+            z-index: 1;
+            position: relative;
         }
 
         input[type="file"] {
@@ -101,11 +144,12 @@
         }
 
         .file-info {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 20px;
+            border-radius: 12px;
             margin-bottom: 25px;
             display: none;
+            border: 1px solid rgba(102, 126, 234, 0.3);
         }
 
         .file-info.show {
@@ -120,30 +164,150 @@
 
         .file-name {
             font-weight: 600;
-            color: #333;
+            color: #fff;
             margin-bottom: 8px;
             word-break: break-all;
         }
 
         .file-size {
-            color: #666;
+            color: #aaa;
             font-size: 13px;
         }
 
-        .settings {
-            background: #f9f9f9;
-            padding: 25px;
+        .preview-container {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 15px;
+            padding: 20px;
             margin-bottom: 30px;
             display: none;
+            text-align: center;
         }
 
-        .settings.show {
+        .preview-container.show {
             display: block;
         }
 
+        .preview-box {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #aaa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(102, 126, 234, 0.1) 0px,
+                rgba(102, 126, 234, 0.1) 2px,
+                transparent 2px,
+                transparent 4px
+            );
+            animation: scanlines 0.15s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(10px); }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+            padding-bottom: 15px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: #aaa;
+            cursor: pointer;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #fff;
+        }
+
+        .tab-btn.active::after {
+            transform: scaleX(1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Presets */
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .preset-btn {
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            color: #aaa;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .preset-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .preset-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: #fff;
+        }
+
+        /* Sliders */
         .setting-group {
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
 
         .setting-group:last-child {
@@ -152,24 +316,28 @@
 
         .setting-label {
             font-weight: 600;
-            color: #333;
+            color: #fff;
             margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 14px;
         }
 
         .setting-value {
+            background: rgba(102, 126, 234, 0.2);
             color: #667eea;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
             font-weight: 600;
-            font-size: 14px;
         }
 
         .slider {
             width: 100%;
             height: 6px;
             border-radius: 5px;
-            background: #ddd;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
             outline: none;
             -webkit-appearance: none;
             cursor: pointer;
@@ -178,50 +346,72 @@
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.6);
         }
 
         .slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             cursor: pointer;
             border: none;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.6);
+        }
+
+        .color-picker-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .color-picker {
+            width: 50px;
+            height: 40px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            flex-shrink: 0;
         }
 
         .select-group {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
 
         .select-btn {
-            flex: 1;
             padding: 12px;
-            border: 2px solid #ddd;
+            border: 2px solid rgba(102, 126, 234, 0.3);
             border-radius: 8px;
-            background: white;
+            background: rgba(102, 126, 234, 0.05);
             cursor: pointer;
             font-weight: 500;
-            color: #666;
+            color: #aaa;
             transition: all 0.2s ease;
+            font-size: 13px;
+        }
+
+        .select-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
         }
 
         .select-btn.active {
             border-color: #667eea;
-            background: #f0f2ff;
-            color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+            color: #fff;
         }
 
         .button-group {
             display: flex;
             gap: 12px;
+            margin-top: 30px;
         }
 
         .btn {
@@ -242,7 +432,7 @@
 
         .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
         }
 
         .btn-primary:disabled {
@@ -251,18 +441,19 @@
         }
 
         .btn-secondary {
-            background: #f5f5f5;
-            color: #333;
-            border: 2px solid #ddd;
+            background: rgba(102, 126, 234, 0.1);
+            color: #aaa;
+            border: 2px solid rgba(102, 126, 234, 0.3);
         }
 
         .btn-secondary:hover {
-            background: #efefef;
+            border-color: #667eea;
+            color: #667eea;
         }
 
         .progress-section {
             display: none;
-            margin-top: 25px;
+            margin-top: 30px;
         }
 
         .progress-section.show {
@@ -272,10 +463,11 @@
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: #f0f0f0;
+            background: rgba(102, 126, 234, 0.1);
             border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
         }
 
         .progress-fill {
@@ -284,11 +476,12 @@
             width: 0%;
             transition: width 0.3s ease;
             border-radius: 10px;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
         }
 
         .progress-text {
             font-size: 13px;
-            color: #666;
+            color: #aaa;
             text-align: center;
         }
 
@@ -306,47 +499,96 @@
         }
 
         .status.success {
-            background: #d4f4dd;
-            color: #2e8b57;
+            background: rgba(46, 139, 87, 0.2);
+            color: #5dd58d;
+            border: 1px solid rgba(46, 139, 87, 0.4);
         }
 
         .status.processing {
-            background: #fff3cd;
-            color: #856404;
+            background: rgba(212, 175, 55, 0.2);
+            color: #ffc542;
+            border: 1px solid rgba(212, 175, 55, 0.4);
         }
 
         .status.error {
-            background: #f8d7da;
-            color: #721c24;
+            background: rgba(220, 53, 69, 0.2);
+            color: #ff6b9d;
+            border: 1px solid rgba(220, 53, 69, 0.4);
+        }
+
+        .sidebar {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .info-box strong {
+            color: #667eea;
         }
 
         .feature-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .feature-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 13px;
-            color: #666;
+            font-size: 12px;
+            color: #aaa;
         }
 
         .feature-icon {
             color: #667eea;
             font-weight: bold;
+            font-size: 14px;
+        }
+
+        .reset-btn-text {
+            font-size: 12px;
+            color: #667eea;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .reset-btn-text:hover {
+            color: #764ba2;
         }
 
         .spinner {
             display: inline-block;
             width: 16px;
             height: 16px;
-            border: 3px solid #f3f3f3;
+            border: 3px solid rgba(102, 126, 234, 0.3);
             border-top: 3px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -356,259 +598,99 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .effect-badge {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin: 2px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎬 4K Video Upscaler Pro</h1>
-            <p>Upscale to 4K with AI-powered clarity enhancement</p>
-        </div>
-
-        <div class="upload-zone" id="uploadZone">
-            <div class="upload-icon">📹</div>
-            <h2>Upload Your Video</h2>
-            <p>Click or drag your video file here (Max 2GB)</p>
-            <input type="file" id="fileInput" accept="video/*">
-        </div>
-
-        <div class="file-info" id="fileInfo">
-            <div class="file-name" id="fileName"></div>
-            <div class="file-size" id="fileSize"></div>
-        </div>
-
-        <div class="settings" id="settings">
-            <div class="setting-group">
-                <div class="setting-label">
-                    <span>Output Resolution</span>
-                </div>
-                <div class="select-group" id="resolutionGroup">
-                    <button class="select-btn active" data-res="2K">2K</button>
-                    <button class="select-btn" data-res="4K">4K</button>
-                    <button class="select-btn" data-res="8K">8K</button>
-                </div>
+    <div class="main-container">
+        <div class="container">
+            <div class="header">
+                <h1>🎬 Cinematic 4K Video Upscaler Pro</h1>
+                <p>Professional video enhancement with cinematic effects & filters</p>
             </div>
 
-            <div class="setting-group">
-                <div class="setting-label">
-                    <span>Clarity Enhancement</span>
-                    <span class="setting-value"><span id="clarityValue">75</span>%</span>
-                </div>
-                <input type="range" id="claritySlider" class="slider" min="0" max="100" value="75">
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-icon">📹</div>
+                <h2>Upload Your Video</h2>
+                <p>Click or drag your video file here</p>
+                <input type="file" id="fileInput" accept="video/*">
             </div>
 
-            <div class="setting-group">
-                <div class="setting-label">
-                    <span>Color Grading</span>
-                    <span class="setting-value"><span id="colorValue">50</span>%</span>
-                </div>
-                <input type="range" id="colorSlider" class="slider" min="0" max="100" value="50">
+            <div class="file-info" id="fileInfo">
+                <div class="file-name" id="fileName"></div>
+                <div class="file-size" id="fileSize"></div>
             </div>
 
-            <div class="setting-group">
-                <div class="setting-label">
-                    <span>Frame Interpolation</span>
-                </div>
-                <div class="select-group" id="fpsGroup">
-                    <button class="select-btn active" data-fps="same">Same as Original</button>
-                    <button class="select-btn" data-fps="60">60 FPS</button>
+            <div class="preview-container" id="previewContainer">
+                <div class="preview-box">
+                    Live Preview (Filters Applied)</div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs" id="tabsContainer">
+                <button class="tab-btn active" data-tab="presets">🎨 Presets</button>
+                <button class="tab-btn" data-tab="upscale">📺 Upscaling</button>
+                <button class="tab-btn" data-tab="color">🎬 Color</button>
+                <button class="tab-btn" data-tab="effects">✨ Effects</button>
+                <button class="tab-btn" data-tab="advanced">⚙️ Advanced</button>
+            </div>
+
+            <!-- Presets Tab -->
+            <div class="tab-content active" id="presets-tab">
+                <div class="presets-grid" id="presetsGrid">
+                    <button class="preset-btn active" data-preset="original">🎯 Original</button>
+                    <button class="preset-btn" data-preset="cinematic-gold">🟡 Cinema Gold</button>
+                    <button class="preset-btn" data-preset="cinematic-cool">❄️ Cinema Cool</button>
+                    <button class="preset-btn" data-preset="cinematic-warm">🔥 Cinema Warm</button>
+                    <button class="preset-btn" data-preset="noir">🖤 Film Noir</button>
+                    <button class="preset-btn" data-preset="vintage">📸 Vintage</button>
+                    <button class="preset-btn" data-preset="sci-fi">🌌 Sci-Fi</button>
+                    <button class="preset-btn" data-preset="retro">🎞️ Retro</button>
                 </div>
             </div>
-        </div>
 
-        <div class="progress-section" id="progressSection">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-text" id="progressText">Processing: 0%</div>
-        </div>
+            <!-- Upscaling Tab -->
+            <div class="tab-content" id="upscale-tab">
+                <div class="setting-group">
+                    <div class="setting-label">
+                        <span>Output Resolution</span>
+                    </div>
+                    <div class="select-group" id="resolutionGroup">
+                        <button class="select-btn active" data-res="1080">1080p</button>
+                        <button class="select-btn" data-res="2K">2K</button>
+                        <button class="select-btn" data-res="4K">4K</button>
+                        <button class="select-btn" data-res="8K">8K</button>
+                    </div>
+                </div>
 
-        <div class="status" id="status"></div>
+                <div class="setting-group">
+                    <div class="setting-label">
+                        <span>Upscaling Quality</span>
+                        <span class="setting-value"><span id="upscaleValue">85</span>%</span>
+                    </div>
+                    <input type="range" id="upscaleSlider" class="slider" min="0" max="100" value="85">
+                </div>
 
-        <div class="button-group">
-            <button class="btn btn-secondary" id="resetBtn" style="display: none;">Reset</button>
-            <button class="btn btn-primary" id="processBtn" disabled>SELECT VIDEO TO START</button>
-        </div>
+                <div class="setting-group">
+                    <div class="setting-label">
+                        <span>Clarity & Sharpness</span>
+                        <span class="setting-value"><span id="clarityValue">75</span>%</span>
+                    </div>
+                    <input type="range" id="claritySlider" class="slider" min="0" max="100" value="75">
+                </div>
 
-        <div class="feature-list">
-            <div class="feature-item">
-                <span class="feature-icon">✓</span>
-                <span>AI-Powered Upscaling</span>
-            </div>
-            <div class="feature-item">
-                <span class="feature-icon">✓</span>
-                <span>4K Quality Output</span>
-            </div>
-            <div class="feature-item">
-                <span class="feature-icon">✓</span>
-                <span>Noise Reduction</span>
-            </div>
-            <div class="feature-item">
-                <span class="feature-icon">✓</span>
-                <span>Color Enhancement</span>
-            </div>
-            <div class="feature-item">
-                <span class="feature-icon">✓</span>
-                <span>Face Clarity</span>
-            </div>
-            <div class="feature-item">
-                <span class="feature-icon">✓</span>
-                <span>Edge Sharpening</span>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const uploadZone = document.getElementById('uploadZone');
-        const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const settings = document.getElementById('settings');
-        const processBtn = document.getElementById('processBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const progressSection = document.getElementById('progressSection');
-        const status = document.getElementById('status');
-        const claritySlider = document.getElementById('claritySlider');
-        const colorSlider = document.getElementById('colorSlider');
-        const clarityValue = document.getElementById('clarityValue');
-        const colorValue = document.getElementById('colorValue');
-
-        let selectedFile = null;
-        let selectedResolution = '4K';
-        let selectedFPS = 'same';
-
-        // File upload handling
-        uploadZone.addEventListener('click', () => fileInput.click());
-
-        uploadZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadZone.classList.add('dragover');
-        });
-
-        uploadZone.addEventListener('dragleave', () => {
-            uploadZone.classList.remove('dragover');
-        });
-
-        uploadZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                handleFileSelect(e.dataTransfer.files[0]);
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFileSelect(e.target.files[0]);
-            }
-        });
-
-        function handleFileSelect(file) {
-            if (!file.type.startsWith('video/')) {
-                showStatus('Please select a valid video file', 'error');
-                return;
-            }
-
-            selectedFile = file;
-            document.getElementById('fileName').textContent = file.name;
-            document.getElementById('fileSize').textContent = 
-                `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
-            
-            fileInfo.classList.add('show');
-            settings.classList.add('show');
-            processBtn.disabled = false;
-            processBtn.textContent = '🚀 UPSCALE TO ' + selectedResolution;
-            resetBtn.style.display = 'block';
-            uploadZone.style.opacity = '0.6';
-        }
-
-        // Resolution selection
-        document.getElementById('resolutionGroup').addEventListener('click', (e) => {
-            if (e.target.classList.contains('select-btn')) {
-                document.querySelectorAll('#resolutionGroup .select-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                e.target.classList.add('active');
-                selectedResolution = e.target.dataset.res;
-                if (selectedFile) {
-                    processBtn.textContent = '🚀 UPSCALE TO ' + selectedResolution;
-                }
-            }
-        });
-
-        // FPS selection
-        document.getElementById('fpsGroup').addEventListener('click', (e) => {
-            if (e.target.classList.contains('select-btn')) {
-                document.querySelectorAll('#fpsGroup .select-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                e.target.classList.add('active');
-                selectedFPS = e.target.dataset.fps;
-            }
-        });
-
-        // Slider updates
-        claritySlider.addEventListener('input', (e) => {
-            clarityValue.textContent = e.target.value;
-        });
-
-        colorSlider.addEventListener('input', (e) => {
-            colorValue.textContent = e.target.value;
-        });
-
-        // Process button
-        processBtn.addEventListener('click', startProcessing);
-
-        // Reset button
-        resetBtn.addEventListener('click', () => {
-            selectedFile = null;
-            fileInput.value = '';
-            fileInfo.classList.remove('show');
-            settings.classList.remove('show');
-            progressSection.classList.remove('show');
-            status.classList.remove('show');
-            processBtn.disabled = true;
-            processBtn.textContent = 'SELECT VIDEO TO START';
-            resetBtn.style.display = 'none';
-            uploadZone.style.opacity = '1';
-        });
-
-        function startProcessing() {
-            if (!selectedFile) return;
-
-            progressSection.classList.add('show');
-            status.classList.remove('show');
-            processBtn.disabled = true;
-
-            // Simulate processing
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 15;
-                if (progress > 100) progress = 100;
-                
-                document.getElementById('progressFill').style.width = progress + '%';
-                document.getElementById('progressText').textContent = 
-                    `Processing: ${Math.floor(progress)}%`;
-
-                if (progress === 100) {
-                    clearInterval(interval);
-                    setTimeout(completeProcessing, 500);
-                }
-            }, 500);
-        }
-
-        function completeProcessing() {
-            showStatus(
-                `✓ Video successfully upscaled to ${selectedResolution}!\nFile: ${selectedFile.name} (Enhanced)\nDownload ready in your browser.`,
-                'success'
-            );
-            processBtn.disabled = false;
-            processBtn.textContent = '✓ COMPLETE - DOWNLOAD';
-        }
-
-        function showStatus(message, type) {
-            status.textContent = message;
-            status.className = 'status show ' + type;
-        }
-    </script>
-</body>
-</html>
+                <div class="setting-group">
+                    <div class="setting-label">
+                        <span>Denoise Strength</span>
+                        <span class="setting-value"><span id="denoiseValue">60</span>%</span>
+                    </div>
+                    <input type="range" id="denoiseSlider" cl
